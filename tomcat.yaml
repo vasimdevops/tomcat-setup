@@ -124,25 +124,25 @@
       tags :
         - DEV
       set_fact :
-         DB_NAME : studentdevapp
-         DB_USER  : student
-         DB_PASSWORD : student@1
+        DB_NAME : studentdevapp
+        DB_USER  : studentdev
+        DB_PASSWORD : student@1
 
     - name : creating the variables
       tags :
         - QA
       set_fact :
          DB_NAME : studentqaapp
-         DB_USER  : student
+         DB_USER  : studentqa
          DB_PASSWORD : student@12
 
     - name : creating the variables
       tags :
         - PROD
       set_fact :
-         DB_NAME : studentprodapp
-         DB_USER  : student
-         DB_PASSWORD : student@123
+        DB_NAME : studentprodapp
+        DB_USER  : studentprod
+        DB_PASSWORD : student@123
 
     - name : create the db setup
       tags :

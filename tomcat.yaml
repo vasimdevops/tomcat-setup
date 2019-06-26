@@ -1,8 +1,6 @@
 - name : app server
   hosts : DEV
   become : yes
-  tags :
-    - DEV
   vars :
     - USERNAME : tomcat
     - TOMCAT_DIR : /tomcat
@@ -112,7 +110,6 @@
 
 - name : creaating schema for TestDB
   hosts : DB
-  become : yes
   tasks :
     - name : installing mysql-python
       tags :
@@ -126,7 +123,7 @@
         - DEV
       set_fact :
         DB_NAME : studentdevapp
-        DB_USER  : studentdev
+        DB_USER  : student
         DB_PASSWORD : student@1
 
     - name : creating the variables
@@ -134,7 +131,7 @@
         - QA
       set_fact :
          DB_NAME : studentqaapp
-         DB_USER  : studentqa
+         DB_USER  : student
          DB_PASSWORD : student@12
 
     - name : creating the variables
@@ -142,7 +139,7 @@
         - PROD
       set_fact :
         DB_NAME : studentprodapp
-        DB_USER  : studentprod
+        DB_USER  : student
         DB_PASSWORD : student@123
 
     - name : create the db setup

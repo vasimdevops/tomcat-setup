@@ -171,8 +171,8 @@
       tags :
         - always
       template :
-        src : /var/lib/jenkins/files/studentapp.sql.j2
-        dest : /tmp/studentapp.sql
+        src : /var/lib/jenkins/files/student.sql.j2
+        dest : /tmp/student.sql
 
     - name : ruuning mysql file
       tags :
@@ -180,5 +180,5 @@
       mysql_db :
         state : import
         name : all
-        target : /tmp/studentapp.sql
+        target : /tmp/student.sql
 

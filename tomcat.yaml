@@ -111,6 +111,7 @@
 
 - name : creaating schema for TestDB
   hosts : DB
+  become : yes
   tasks :
     - name : installing mysql-python
       tags :

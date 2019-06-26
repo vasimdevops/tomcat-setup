@@ -11,14 +11,20 @@
     - MY_SQL : https://github.com/devops2k18/DevOpsDecember/raw/master/APPSTACK/mysql-connector-java-5.1.40.jar
   tasks :
     - name : installing java
+      tags :
+        - always
       yum :
         name : java
         state : latest
     - name : creating tomcat user
+      tags :
+        - always
       user :
         name : "{{USERNAME}}"
 
     - name : ctreating tomcat directory
+      tags :
+        - always
       file :
         path : "{{TOMCAT_DIR}}"
         owner : "{{USERNAME}}"
@@ -27,6 +33,8 @@
         state : directory
 
     - name : installing tomcat
+      tags :
+        - always
       unarchive :
         src : "{{TOMCAT_URL}}"
         dest : "{{TOMCAT_DIR}}"
@@ -34,16 +42,22 @@
       become_user : "{{USERNAME}}"
 
     - name : find the files in webapps
+      tags :
+        - always
       find :
         path : "{{TOMCAT_DIR}}/apache-tomcat-9.0.21/webapps"
         file_type : any
       register : st9
 
     - name : print the output
+      tags :
+        - always
       debug :
         msg : "{{st9}}"
 
     - name : removing the files
+      tags :
+        - always
       file :
         path : "{{item.path}}"
         state : absent
@@ -51,6 +65,8 @@
         "{{st9.files}}"
 
     - name : downlaodinf the student.war and my_sql connector
+      tags :
+        - always
       get_url :
         url : "{{item.url}}"
         dest : "{{item.dest}}"
@@ -60,27 +76,85 @@
       become_user : "{{USERNAME}}"
 
     - name : editing context.xml
+      tags :
+        - always
       blockinfile :
         path : "{{TOMCAT_DIR}}/apache-tomcat-9.0.21/conf/context.xml"
         block : |
-          <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="student" password="student@1" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://localhost:3306/studentapp"/>
+          <Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource" maxTotal="100" maxIdle="30" maxWaitMillis="10000" username="{{DB_USER}}" password="{{DB_PASSWORD}}" driverClassName="com.mysql.jdbc.Driver" url="jdbc:mysql://mariadb-server:3306/{{DB_NAME}}"/>
         insertbefore : "</Context>"
 
    
 
     - name : check the restarting of tomcat
+      tags :
+        - always
       shell : ps -ef | grep tomcat | grep -v grep
       register : st0
       ignore_errors : True
 
     - name : restarting tomcat
+      tags :
+        - always
       shell : nohup sh  shutdown.sh && nohup sh startup.sh
       args :
         chdir : "{{TOMCAT_DIR}}/apache-tomcat-9.0.21/bin"
       when : st0.rc ==0 
 
     - name : starting tomcat
+      tags :
+        - always
       shell : nohup sh startup.sh
       args :
         chdir : "{{TOMCAT_DIR}}/apache-tomcat-9.0.21/bin"
       when : st0.rc !=0
+
+- name : creaating schema for TestDB
+  hosts : DB
+  tasks :
+    - name : installing mysql-python
+      tags :
+        - always
+      yum :
+        name : MySQL-python 
+        state : latest
+
+    - name : creating the variables
+      tags :
+        - DEV
+      set_fact :
+        - DB_NAME : studentdevapp
+        - DB_USER  : student
+        - DB_PASSWORD : student@1
+
+    - name : creating the variables
+      tags :
+        - QA
+      set_fact :
+        - DB_NAME : studentqaapp
+        - DB_USER  : student
+        - DB_PASSWORD : student@12
+
+    - name : creating the variables
+      tags :
+        - PROD
+      set_fact :
+        - DB_NAME : studentprodapp
+        - DB_USER  : student
+        - DB_PASSWORD : student@123
+
+    - name : create the db setup
+      tags :
+        - always
+      template :
+        src : /var/lib/jenkins/files/studentapp.sql.j2
+        dest : /tmp/studentapp.sql
+
+    - name : ruuning mysql file
+      tags :
+        - always
+      mysql_db :
+        state : import
+        name : all
+        target : /tmp/studentapp.sql
+

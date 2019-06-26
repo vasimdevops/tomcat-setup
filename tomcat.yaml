@@ -10,6 +10,13 @@
     - STUDENT_WAR : https://github.com/devops2k18/DevOpsDecember/raw/master/APPSTACK/student.war
     - MY_SQL : https://github.com/devops2k18/DevOpsDecember/raw/master/APPSTACK/mysql-connector-java-5.1.40.jar
   tasks :
+    - name: Install yum utils
+  yum:
+    name:
+    - yum-utils
+    - "@Development tools"
+    lock_timeout: 180
+    
     - name : installing java
       tags :
         - always

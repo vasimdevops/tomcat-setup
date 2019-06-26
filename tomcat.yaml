@@ -2,7 +2,7 @@
   hosts : DEV
   become : yes
   tags :
-    - APP
+    - DEV
   vars :
     - USERNAME : tomcat
     - TOMCAT_DIR : /tomcat

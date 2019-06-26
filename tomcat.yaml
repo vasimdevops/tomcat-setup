@@ -74,6 +74,30 @@
         - {url : "{{MY_SQL}}" , dest : "{{TOMCAT_DIR}}/apache-tomcat-9.0.21/lib"}
       become_user : "{{USERNAME}}"
 
+    - name : creating the variables
+      tags :
+        - DEV
+      set_fact :
+        DB_NAME : studentdevapp
+        DB_USER  : student
+        DB_PASSWORD : student@1
+
+    - name : creating the variables
+      tags :
+        - QA
+      set_fact :
+         DB_NAME : studentqaapp
+         DB_USER  : student
+         DB_PASSWORD : student@12
+
+    - name : creating the variables
+      tags :
+        - PROD
+      set_fact :
+        DB_NAME : studentprodapp
+        DB_USER  : student
+        DB_PASSWORD : student@123
+
     - name : editing context.xml
       tags :
         - always
